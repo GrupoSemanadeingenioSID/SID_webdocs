@@ -1,0 +1,17 @@
+# Archivos temporales de LaTeX
+*.log
+*.aux
+*.fls
+*.out
+*.gz
+*.toc
+*.fdb_latexmk
+## Carpetas:
+.vscode/
+
+# Archivos de compilación y caché
+*.nav
+*.snm
+*.vrb
+*.blg
+*.bbl

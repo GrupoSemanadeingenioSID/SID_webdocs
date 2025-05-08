@@ -27,7 +27,8 @@
 
 % Definición del estilo de cabecera
 \newcommand{\headerStyle}[1]{\textcolor{white}{\textbf{#1}}}
-
+% Preambulo para mayor control de las listas de requerimientos funcionales: 
+\newcommand{\reqnum}[1]{\textbf{\underline{RF-#1}}}
 % Estilo para elementos futuros
 \newcommand{\future}[1]{\textit{#1}}
 
@@ -177,12 +178,12 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 
 \subsection{Componentes Principales}
 \begin{itemize}
-	\item \textbf{Portal Web Principal: } Será el sitio informativo del grupo, 
-    donde se mostrará quiénes somos y cuáles son nuestras áreas de trabajo. Este portal incluirá secciones dedicadas a los distintos 
-    desarrollos del grupo, cada una con su propia página que detallará a sus integrantes, proyectos y líderes. Asimismo, se presentarán los 
-    comités con una estructura similar. 
-    También se incluirá información general sobre el SID, sus actividades, proyectos, equipos, colaboraciones, cursos, noticias e integrantes, 
-    además de un formulario de inscripción para nuevos miembros o interesados.
+	\item \textbf{Portal Web Principal: } Será el sitio informativo del grupo,
+	      donde se mostrará quiénes somos y cuáles son nuestras áreas de trabajo. Este portal incluirá secciones dedicadas a los distintos
+	      desarrollos del grupo, cada una con su propia página que detallará a sus integrantes, proyectos y líderes. Asimismo, se presentarán los
+	      comités con una estructura similar.
+	      También se incluirá información general sobre el SID, sus actividades, proyectos, equipos, colaboraciones, cursos, noticias e integrantes,
+	      además de un formulario de inscripción para nuevos miembros o interesados.
 
 	\item \textbf{Panel Administrativo: } Permitirá la gestión del contenido visible en el portal principal, así como la administración de los datos de los usuarios provenientes de los formularios de inscripción.
 
@@ -191,9 +192,92 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 	\item \textbf{SID Academy: } Proyecto futuro que se plantea como una plataforma educativa de cursos breves, similar a QtAcademy, con el objetivo de fortalecer el aprendizaje especializado dentro de la comunidad.
 \end{itemize}
 
+\section{Requerimientos del Sistema}
+\subsection{Requerimientos Funcionales: }
+\subsubsection{Portal Web Principal}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left]
+	\item[\reqnum{001}] El sistema debe mostrar información institucional del grupo SID.
+	\item[\reqnum{002}] El sistema debe presentar secciones para cada desarrollo del grupo (Web, Robótica, Social) con sus integrantes, proyectos y líderes.
+	\item[\reqnum{003}] El sistema debe mostrar información sobre los comités existentes.
+	\item[\reqnum{004}] El sistema debe listar actividades realizadas por el grupo.
+	\item[\reqnum{005}] El sistema debe mostrar proyectos desarrollados por el grupo.
+	\item[\reqnum{006}] El sistema debe exponer los cursos ofrecidos por el grupo.
+	\item[\reqnum{007}] El sistema debe presentar los equipos de trabajo.
+	\item[\reqnum{008}] El sistema debe publicar noticias relacionadas con el grupo.
+	\item[\reqnum{009}] El sistema debe mostrar información sobre fundaciones y colaboraciones.
+	\item[\reqnum{010}] El sistema debe incluir un formulario de inscripción para nuevos miembros.
+\end{enumerate}
+
+\subsubsection{Panel Administrativo (Dashboard)}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=11]
+	\item[\reqnum{011}] El sistema debe permitir a los administradores gestionar el contenido del portal web.
+	\item[\reqnum{012}] El sistema debe proporcionar funcionalidades para administrar los datos de usuarios.
+	\item[\reqnum{013}] El sistema debe permitir la gestión de actividades (crear, modificar, eliminar).
+	\item[\reqnum{014}] El sistema debe permitir la gestión de proyectos (crear, modificar, eliminar).
+	\item[\reqnum{015}] El sistema debe permitir la gestión de cursos (crear, modificar, eliminar).
+	\item[\reqnum{016}] El sistema debe permitir la gestión de equipos (crear, modificar, eliminar).
+	\item[\reqnum{017}] El sistema debe permitir la gestión de noticias (crear, modificar, eliminar).
+	\item[\reqnum{018}] El sistema debe permitir la gestión de fundaciones (crear, modificar, eliminar).
+	\item[\reqnum{019}] El sistema debe implementar control de acceso basado en roles.
+	\item[\reqnum{020}] El sistema debe permitir la administración de permisos por rol.
+\end{enumerate}
+
+\subsubsection{API de Servicios}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=21]
+	\item[\reqnum{021}] El sistema debe proporcionar endpoints RESTful para listar contenido (actividades, proyectos, etc.).
+	\item[\reqnum{022}] El sistema debe implementar paginación en todos los endpoints que devuelven listas.
+	\item[\reqnum{023}] El sistema debe manejar formatos estándar para solicitudes y respuestas (JSON).
+	\item[\reqnum{024}] El sistema debe implementar autenticación mediante tokens JWT.
+	\item[\reqnum{025}] El sistema debe proporcionar endpoints para la gestión de contenidos protegidos por autenticación.
+\end{enumerate}
+
+\subsection{Requerimientos No Funcionales}
+
+\subsubsection{Seguridad}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left]
+	\item[\reqnum{026}] El sistema debe implementar autenticación OAuth 2.0 con proveedores de identidad externos (Microsoft Entra ID/Azure AD / Google).
+	\item[\reqnum{027}] El sistema debe validar y procesar tokens JWT emitidos por el proveedor de identidad.
+	\item[\reqnum{028}] El sistema debe implementar control de acceso basado en roles mediante la base de datos
+	\item[\reqnum{029}] El sistema debe proteger los endpoints administrativos con autorización basada en roles
+	\item[\reqnum{030}] El sistema debe usar HTTPS para todas las comunicaciones (TLS 1.2+). | Toca entender que es a profundidad
+	\item[\reqnum{031}] El sistema debe implementar protección contra ataques comunes (CSRF, XSS, SQL Injection).
+\end{enumerate}
+
+\subsubsection{Rendimiento}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=32]
+	\item[\reqnum{032}] El sistema debe responder a las solicitudes API en menos de 1 segundo bajo carga normal.
+	\item[\reqnum{033}] El sistema debe soportar al menos 100 usuarios concurrentes.
+	\item[\reqnum{034}] Las consultas a la base de datos deben optimizarse para minimizar el tiempo de respuesta.
+\end{enumerate}
+
+\subsubsection{Escalabilidad}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=35]
+	\item[\reqnum{035}] La arquitectura debe permitir escalar componentes individuales según demanda.
+	\item[\reqnum{036}] El sistema debe ser compatible con despliegue en contenedores (Docker/Kubernetes).
+\end{enumerate}
+
+\subsubsection{Mantenibilidad}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=37]
+	\item[\reqnum{037}] El código debe seguir los principios SOLID y patrones de diseño apropiados.
+	\item[\reqnum{038}] El sistema debe implementar logging estructurado (JSON) para diagnóstico.
+	\item[\reqnum{039}] El código debe incluir documentación JavaDoc y OpenAPI para las APIs.
+\end{enumerate}
+
+\subsubsection{Compatibilidad}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=40]
+	\item[\reqnum{040}] Las APIs deben seguir el estándar RESTful nivel 2 de Richardson.
+	\item[\reqnum{041}] El sistema debe proporcionar documentación interactiva mediante Swagger UI.
+\end{enumerate}
+
+\subsubsection{Interoperabilidad}
+\begin{enumerate}[leftmargin=*,labelwidth=2.5cm,align=left,start=44]
+	\item[\reqnum{044}] El sistema debe exponer APIs con versionado semántico (v1, v2). | Acordar si mandarlo en header o en la api. (obligatorio tag github)
+	\item[\reqnum{045}] Las integraciones deben usar protocolos estándar (OAuth 2.0, OpenID Connect).
+\end{enumerate}
 
 
-\section{Especificación Microservicios:}
+
+\section{Especificación Modulos:}
 
 \begin{figure}[H]
 	\centering
@@ -242,72 +326,72 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 
 
 \begin{table}[H]
-    \centering
-    \renewcommand{\arraystretch}{1.5}
-    \begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{5.0cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{3.0cm}}
-        \toprule
-        \rowcolor{headercolor}
-        \headerStyle{M{\'o}dulo} & \headerStyle{Función principal} & \headerStyle{Métodos API} & \headerStyle{Seguridad} \\
-        \midrule
-        \rowcolor{rowcolor1}
-        \textbf{AuthService} & 
-        Autenticación y autorización\newline
-        Gestión de usuarios y roles\newline
-        Administración de tokens y sesiones &
-        \begin{itemize}[nosep,leftmargin=*]
-            \item POST
-            \item GET
-            \item PUT
-        \end{itemize} &
-        JWT\newline
-        (Solo login es público) \\
-        \midrule
-        \rowcolor{rowcolor2}
-        \textbf{PortalService y Dashboard control} & 
-        Visualización pública del SID\newline
-        (desarrollos, comités, noticias)\newline
-        Administración de desarrollos\newline
-        Gestión de comités y fundaciones &
-        \begin{itemize}[nosep,leftmargin=*]
-            \item GET
-            \item POST
-            \item PUT
-            \item PATCH
-            \item DELETE
-        \end{itemize} &
-        Mixto:\newline
-        • Público (lectura)\newline
-        • JWT + roles (escritura) \\
-        \midrule
-        \rowcolor{rowcolor1}
-        \textbf{CoursesService} & 
-        Gestión de cursos e inscripciones\newline
-        Administración de profesores/alumnos\newline
-        Seguimiento y evaluación académica &
-        \begin{itemize}[nosep,leftmargin=*]
-            \item GET
-            \item POST
-            \item PUT
-        \end{itemize} &
-        JWT + roles\newline
-        (basado en perfiles académicos) \\
-        \midrule
-        \rowcolor{rowcolor2}
-        \textbf{\future{SIDAcademy}}\newline
-        \textit{(futuro)} & 
-        Contenidos educativos cortos\newline
-        Curación de material didáctico\newline
-        Análisis de métricas de aprendizaje &
-        \begin{itemize}[nosep,leftmargin=*]
-            \item GET
-            \item POST
-            \item PUT
-        \end{itemize} &
-        JWT + roles\newline
-        (según nivel de acceso) \\
-        \bottomrule
-    \end{tabular}
-    \caption{Arquitectura de modulos propuesta para el sistema SID}
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{5.0cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{3.0cm}}
+		\toprule
+		\rowcolor{headercolor}
+		\headerStyle{M{\'o}dulo}                   & \headerStyle{Función principal} & \headerStyle{Métodos API} & \headerStyle{Seguridad} \\
+		\midrule
+		\rowcolor{rowcolor1}
+		\textbf{AuthService}                       &
+		Autenticación y autorización\newline
+		Gestión de usuarios y roles\newline
+		Administración de tokens y sesiones        &
+		\begin{itemize}[nosep,leftmargin=*]
+			\item POST
+			\item GET
+			\item PUT
+		\end{itemize}        &
+		JWT\newline
+		(Solo login es público)                                                                                                            \\
+		\midrule
+		\rowcolor{rowcolor2}
+		\textbf{PortalService y Dashboard control} &
+		Visualización pública del SID\newline
+		(desarrollos, comités, noticias)\newline
+		Administración de desarrollos\newline
+		Gestión de comités y fundaciones           &
+		\begin{itemize}[nosep,leftmargin=*]
+			\item GET
+			\item POST
+			\item PUT
+			\item PATCH
+			\item DELETE
+		\end{itemize}        &
+		Mixto:\newline
+		• Público (lectura)\newline
+		• JWT + roles (escritura)                                                                                                          \\
+		\midrule
+		\rowcolor{rowcolor1}
+		\textbf{CoursesService}                    &
+		Gestión de cursos e inscripciones\newline
+		Administración de profesores/alumnos\newline
+		Seguimiento y evaluación académica         &
+		\begin{itemize}[nosep,leftmargin=*]
+			\item GET
+			\item POST
+			\item PUT
+		\end{itemize}        &
+		JWT + roles\newline
+		(basado en perfiles académicos)                                                                                                    \\
+		\midrule
+		\rowcolor{rowcolor2}
+		\textbf{\future{SIDAcademy}}\newline
+		\textit{(futuro)}                          &
+		Contenidos educativos cortos\newline
+		Curación de material didáctico\newline
+		Análisis de métricas de aprendizaje        &
+		\begin{itemize}[nosep,leftmargin=*]
+			\item GET
+			\item POST
+			\item PUT
+		\end{itemize}        &
+		JWT + roles\newline
+		(según nivel de acceso)                                                                                                            \\
+		\bottomrule
+	\end{tabular}
+	\caption{Arquitectura de modulos propuesta para el sistema SID}
 \end{table}
 \section{Arquitectura de Base de Datos: }
 Como base de datos se elige una NewSQL como Neon la cual opera con postgresql, elegido por comidad de diseño y ademas brinda lo necesario para el proyecto.
@@ -323,7 +407,7 @@ La base de datos generada es:
 	\caption{Diagrama de base de datos relacional desde google}
 \end{figure}
 \section{Arquitectura de modulos y microservicios: }
-Vamos a abordar todo el tema de los m{\'o}dulos y microservicios ademas de su arquitectura paso por paso. 
+Vamos a abordar todo el tema de los m{\'o}dulos y microservicios ademas de su arquitectura paso por paso.
 El único microservicio actual es AuthService, luego estan los m{\'o}dulos monoliticos como el \textbf{Portal Content Service}
 \section{Portal Content Service}
 Este servicio de portal de contenido que se generará es la dicha ``Página del SID'', desde el lado del backend tenemos que suplir información relevante,

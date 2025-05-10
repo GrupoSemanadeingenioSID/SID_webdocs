@@ -285,7 +285,7 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 	\caption{Diagrama de microservicios del proyecto}
 \end{figure}
 
-\section*{Microservicios propuestos}
+\section*{Modulos propuestos}
 
 \subsection{Servicio de Autenticación y Usuarios}
 \begin{itemize}
@@ -398,14 +398,10 @@ Como base de datos se elige una NewSQL como Neon la cual opera con postgresql, e
 La base de datos generada es:
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\textwidth]{src/SID_Db.pdf}
+	\includegraphics[width=0.5\textwidth]{src/ModeloTerminado.pdf}
 	\caption{Diagrama de base de datos relacional}
 \end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.5\textwidth]{src/Modelo-pica.png}
-	\caption{Diagrama de base de datos relacional desde google}
-\end{figure}
+
 \section{Arquitectura de modulos y microservicios: }
 Vamos a abordar todo el tema de los m{\'o}dulos y microservicios ademas de su arquitectura paso por paso.
 El único microservicio actual es AuthService, luego estan los m{\'o}dulos monoliticos como el \textbf{Portal Content Service}
@@ -413,13 +409,83 @@ El único microservicio actual es AuthService, luego estan los m{\'o}dulos monol
 Este servicio de portal de contenido que se generará es la dicha ``Página del SID'', desde el lado del backend tenemos que suplir información relevante,
 esta información está dividida en:
 \begin{itemize}
-	\item Actividades (no está en BD)
-	\item Proyectos (no está en BD)
-	\item Cursos (no está en BD) -- final
-	\item Equipos (no está en BD)
+	\item Actividades
+	\item Proyectos
+	\item Cursos
+	\item Equipos
 	\item Noticias
 	\item Aliados | Fundaciones
 \end{itemize}
+
+\subsection{Vision General}
+El diseño del sistema sigue un patrón de arquitectura estándar de múltiples capas comúnmente utilizado en aplicaciones de SpringBoot.
+El sistema está diseñado para mantener el desacoplamiento de funciones para garantizar la mantenibilidad, la comprobabilidad (Testing) y la
+escalabilidad
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{src/SID_PortalWEB_D1.pdf}
+	\caption{Diagrama de la arquitectura por capas}
+\end{figure}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|p{4cm}|p{7cm}|}
+		\hline
+		\textbf{Capa}       & \textbf{Descripción}                              & \textbf{Responsabilidades principales}                                       \\
+		\hline
+		Capa API            & Punto de entrada para las solicitudes del cliente & Manejo de solicitudes, formateo de respuestas, validación de entradas        \\
+		\hline
+		Capa de Servicio    & Contiene la lógica de la aplicación               & Orquesta operaciones, maneja transacciones y logica de la aplicación         \\
+		\hline
+		Capa de Repositorio & Gestiona el acceso a los datos                    & Proporciona una abstracción sobre el almacenamiento, maneja operaciones CRUD \\
+		\hline
+		Capa de Dominio     & Contiene las entidades del dominio                & Encapsula los datos y la lógica del negocio                                  \\
+		\hline
+	\end{tabular}
+	\caption{Responsabilidades por capa del sistema}
+\end{table}
+
+\subsection{Capa API (Controladores)}
+
+La capa API es responsable de manejar las solicitudes HTTP entrantes, validar los datos de entrada y devolver respuestas apropiadas. 
+Esta capa está compuesta por clases controladoras que definen los endpoints REST expuestos por la aplicación.
+
+Los controladores siguen la convención REST tanto para el nombramiento de endpoints como para el uso de métodos HTTP:
+
+\begin{itemize}
+    \item \textbf{GET} para obtener recursos
+    \item \textbf{POST} para crear recursos
+    \item \textbf{PUT} para actualizar recursos completamente
+    \item \textbf{PATCH} para actualizar parcialmente recursos
+    \item \textbf{DELETE} para eliminar recursos
+\end{itemize}
+
+\subsection{Capa de Servicio}
+
+La capa de servicio implementa la lógica central de la aplicación. 
+Se ubica entre los controladores y los repositorios, orquestando operaciones entre múltiples entidades del dominio y aplicando las reglas de negocio.
+
+\subsection{Capa de Repositorio}
+
+La capa de repositorio proporciona una abstracción sobre el mecanismo de acceso a datos. 
+Utiliza Spring Data JPA para simplificar las operaciones con la base de datos y reducir el código repetitivo.
+También en los casos necesarios utiliza el patrón repositorio para hacer llamados directos a la base de datos de ser necesario
+
+\subsection{Capa de Dominio}
+
+La capa de dominio contiene las clases de entidad que representan el dominio del negocio. 
+Estas clases son aquellas que sirven para encapsular la logica del negocio, y se pasa a service para ser manejada.
+
+\subsection{Capa de Entidad}
+La capa de entidad proporciona aquellas clases que representan la abstracción más cercana a la base de datos.
+Son quienes se usaran mediante los JPA para hacer llamados directos a la base de datos y tambien usada en los repositorios manuales
+
+\subsection{Flujo de peticiones}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{src/SID_request-flow.pdf}
+	\caption{Diagrama de el flujo de las petciones por capas}
+\end{figure}
 
 \subsection{Endpoints REST}
 Con base en los elementos anteriores, definimos los siguientes endpoints REST con paginación de Spring Boot:

@@ -285,7 +285,7 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 	\caption{Diagrama de microservicios del proyecto}
 \end{figure}
 
-\section*{Modulos propuestos}
+\section{Modulos propuestos}
 
 \subsection{Servicio de Autenticación y Usuarios}
 \begin{itemize}
@@ -447,33 +447,33 @@ escalabilidad
 
 \subsection{Capa API (Controladores)}
 
-La capa API es responsable de manejar las solicitudes HTTP entrantes, validar los datos de entrada y devolver respuestas apropiadas. 
+La capa API es responsable de manejar las solicitudes HTTP entrantes, validar los datos de entrada y devolver respuestas apropiadas.
 Esta capa está compuesta por clases controladoras que definen los endpoints REST expuestos por la aplicación.
 
 Los controladores siguen la convención REST tanto para el nombramiento de endpoints como para el uso de métodos HTTP:
 
 \begin{itemize}
-    \item \textbf{GET} para obtener recursos
-    \item \textbf{POST} para crear recursos
-    \item \textbf{PUT} para actualizar recursos completamente
-    \item \textbf{PATCH} para actualizar parcialmente recursos
-    \item \textbf{DELETE} para eliminar recursos
+	\item \textbf{GET} para obtener recursos
+	\item \textbf{POST} para crear recursos
+	\item \textbf{PUT} para actualizar recursos completamente
+	\item \textbf{PATCH} para actualizar parcialmente recursos
+	\item \textbf{DELETE} para eliminar recursos
 \end{itemize}
 
 \subsection{Capa de Servicio}
 
-La capa de servicio implementa la lógica central de la aplicación. 
+La capa de servicio implementa la lógica central de la aplicación.
 Se ubica entre los controladores y los repositorios, orquestando operaciones entre múltiples entidades del dominio y aplicando las reglas de negocio.
 
 \subsection{Capa de Repositorio}
 
-La capa de repositorio proporciona una abstracción sobre el mecanismo de acceso a datos. 
+La capa de repositorio proporciona una abstracción sobre el mecanismo de acceso a datos.
 Utiliza Spring Data JPA para simplificar las operaciones con la base de datos y reducir el código repetitivo.
 También en los casos necesarios utiliza el patrón repositorio para hacer llamados directos a la base de datos de ser necesario
 
 \subsection{Capa de Dominio}
 
-La capa de dominio contiene las clases de entidad que representan el dominio del negocio. 
+La capa de dominio contiene las clases de entidad que representan el dominio del negocio.
 Estas clases son aquellas que sirven para encapsular la logica del negocio, y se pasa a service para ser manejada.
 
 \subsection{Capa de Entidad}
@@ -494,9 +494,568 @@ Con base en los elementos anteriores, definimos los siguientes endpoints REST co
 
 \subsubsection{Actividades}
 
+\paragraph{GET Todos (Paginado)}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET Actividades (paginado)}
+			\begin{lstlisting}[language=HTTP]
+GET /api/activities?page=0&size=10&sort=startDate,desc
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "content": [
+        {
+            "id": integer,                   // ID unico de la actividad
+            "title": string,                 // Titulo de la actividad
+            "description": string,           // Descripcion de la actividad
+            "priority": string(enum),        // Prioridad: "ALTA", "MEDIA", "BAJA"
+            "status": string(enum),          // Estado: "ACTIVA", "ESPERA", "COMPLETADA", "CANCELADA"
+            "total_hours": integer,          // Total de horas estimadas
+            "start_date": string(ISO-8601),  // Fecha de inicio
+            "completation_date": string(ISO-8601), // Fecha estimada de finalizacion
+            "manager": string,               // Nombre del gestor de la actividad
+            "created_at": string(ISO-8601)   // Fecha de creacion
+        }
+        // ... mas elementos
+    ],
+    "pageable": {
+        "sort": object,       // Informacion de ordenamiento
+        "pageSize": integer,  // Tamanioo de pagina solicitado
+        "pageNumber": integer // Numero de pagina actual
+        // ... mas metadatos de paginacion
+    },
+    "totalElements": integer, // Total de resultados
+    "totalPages": integer,    // Total de paginas disponibles
+    "first": boolean,         // Si es la primera pagina
+    "last": boolean,          // Si es la ultima pagina
+    "size": integer           // Tamanio de la pagina actual
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{GET Individual}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET /api/activities/{id} - Obtener actividad específica}
+			\begin{lstlisting}[language=HTTP]
+GET /api/activities/{id}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID unico
+    "title": string,                 // Titulo de la actividad
+    "description": string,           // Descripcion detallada
+    "priority": string(enum),        // Prioridad: "ALTA", "MEDIA", "BAJA"
+    "status": string(enum),          // Estado: "ACTIVA", "ESPERA", "COMPLETADA", "CANCELADA"
+    "total_hours": integer,          // Total de horas estimadas
+    "start_date": string(ISO-8601),  // Fecha de inicio
+    "completation_date": string(ISO-8601), // Fecha estimada de finalizacion
+    "manager": string,               // Nombre del gestor
+    "members": [                     // Miembros asignados
+        {
+            "name": string,          // Nombre del miembro
+            "identify": string,      // Identificador unico
+            "isMember": boolean      // Si es miembro del SID
+        },
+        // ... mas miembros
+    ],
+    "committees": [                  // Comites asociados
+        {
+            "name": string,          // Nombre del comite
+            "leader": string,        // Lider del comite
+            "description": string    // Descripcion de funcion
+        },
+        // ... mas comites
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{POST Creación}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{POST /api/activities - Crear nueva actividad}
+			\begin{lstlisting}[language=HTTP]
+POST /api/activities
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "title": string,                 // Requerido: Titulo de la actividad
+    "description": string,           // Requerido: Descripcion
+    "priority": string(enum),        // Requerido: "ALTA", "MEDIA", "BAJA"
+    "status": string(enum),          // Requerido: "ACTIVA", "ESPERA", "COMPLETADA", "CANCELADA"
+    "total_hours": integer,          // Requerido: Horas estimadas
+    "start_date": string(ISO-8601),  // Requerido: Fecha de inicio
+    "completation_date": string(ISO-8601), // Requerido: Fecha estimada de finalizacion
+    "manager": string,               // Requerido: Nombre del gestor
+    "members": [                     // Opcional: Miembros asignados
+        {
+            "name": string,          // Nombre del miembro
+            "identify": string,      // Identificador unico
+            "isMember": boolean      // Si es miembro del SID
+        },
+        // ... mas miembros
+    ],
+    "committees": [                  // Opcional: Comites asociados
+        {
+            "committee_id": integer, // ID del comite existente
+            "description": string    // Descripcion de funcion
+        },
+        // ... mas comites
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID generado automaticamente
+    "title": string,                 // Titulo proporcionado
+    "status": string(enum),          // Estado inicial
+    "created_at": string(ISO-8601)   // Timestamp de creacion
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{PUT (Reemplazo completo)}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{PUT /api/activities/{id} - Actualizar actividad completa}
+			\begin{lstlisting}[language=HTTP]
+PUT /api/activities/{id}
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "title": string,                 // Requerido: Nuevo titulo
+    "description": string,           // Requerido: Nueva descripcion
+    "priority": string(enum),        // Requerido: Nueva prioridad
+    "status": string(enum),          // Requerido: Nuevo estado
+    "total_hours": integer,          // Requerido: Nuevas horas estimadas
+    "start_date": string(ISO-8601),  // Requerido: Nueva fecha de inicio
+    "completation_date": string(ISO-8601), // Requerido: Nueva fecha de finalizacion
+    "manager": string,               // Requerido: Nuevo gestor
+    "members": [                     // Requerido: Nuevos miembros
+        {
+            "name": string,
+            "identify": string,
+            "isMember": boolean
+        }
+        // ... todos los miembros
+    ],
+    "committees": [                  // Requerido: Nuevos comites
+        {
+            "committee_id": integer,
+            "description": string
+        }
+        // ... todos los comites
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID de la actividad actualizada
+    "title": string,                 // Titulo actualizado
+    "last_updated": string(ISO-8601) // Timestamp de actualizacion
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{PATCH (Actualización parcial)}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{PATCH /api/activities/{id} - Actualizar campos específicos}
+			\begin{lstlisting}[language=HTTP]
+PATCH /api/activities/{id}
+Content-Type: application/json-patch+json
+Authorization: Bearer <token>
+
+[
+    { 
+      "op": string(enum), 
+      "path": string, 
+      "value": any 
+    }, // Operacion JSON Patch
+    // Operaciones permitidas: "replace", "add", "remove"
+    // Ejemplo: { "op": "replace", "path": "/status", "value": "COMPLETADA" }
+]
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,       // ID de la actividad modificada
+    "changes": string[], // Lista de campos modificados
+    "version": integer   // Nueva version del documento
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{DELETE}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{DELETE /api/activities/{id} - Eliminar actividad}
+			\begin{lstlisting}[language=HTTP]
+DELETE /api/activities/{id}
+Authorization: Bearer <token>
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Respuesta}
+			\begin{lstlisting}[language=HTTP]
+HTTP/1.1 204 No Content
+// No se devuelve cuerpo de respuesta
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%   PROYECTOS %%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Proyectos}
+
+\paragraph{GET Todos (Paginado)}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET Proyectos (paginado)}
+			\begin{lstlisting}[language=HTTP]
+GET /api/projects?page=0&size=10&sort=startDate,desc
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "content": [
+        {
+            "id": integer,                 // ID unico del proyecto
+            "name": string,                // Nombre del proyecto
+            "description": string,         // Descripcion breve
+            "start_date": string(ISO-8601), // Fecha de inicio
+            "end_date": string(ISO-8601),  // Fecha de finalizacion planificada
+            "budget": number,              // Presupuesto asignado
+            "development_id": string,      // ID de desarrollo (1, 2, 3)
+            "status": string(enum)         // Estado: "ACTIVO", "COMPLETADO", "EN_PAUSA", "CANCELADO"
+        }
+        // ... mas elementos
+    ],
+    "pageable": {
+        "sort": object,       // Informacion de ordenamiento
+        "pageSize": integer,  // Tamano de pagina solicitado
+        "pageNumber": integer // Numero de pagina actual
+        // ... mas metadatos de paginacion
+    },
+    "totalElements": integer, // Total de resultados
+    "totalPages": integer,    // Total de paginas disponibles
+    "first": boolean,         // Si es la primera pagina
+    "last": boolean,          // Si es la ultima pagina
+    "size": integer           // Tamano de la pagina actual
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{GET Individual}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET /api/projects/{id} - Obtener proyecto especifico}
+			\begin{lstlisting}[language=HTTP]
+GET /api/projects/{id}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID unico
+    "name": string,                  // Nombre del proyecto
+    "description": string,           // Descripcion detallada
+    "start_date": string(ISO-8601),  // Fecha de inicio
+    "end_date": string(ISO-8601),    // Fecha de finalizacion planificada
+    "budget": number,                // Presupuesto asignado
+    "development_id": string,        // ID de desarrollo (1, 2, 3)
+    "status": string(enum),          // Estado: "ACTIVO", "COMPLETADO", "EN_PAUSA", "CANCELADO"
+    "goals": [                       // Objetivos del proyecto
+        {
+            "title": string,         // Titulo del objetivo
+            "description": string,   // Descripcion del objetivo
+            "completion_date": string(ISO-8601), // Fecha de cumplimiento
+            "status": string(enum)   // Estado del objetivo
+        }
+        // ... mas objetivos
+    ],
+    "teams": [                       // Equipos asociados
+        {
+            "id": integer,           // ID del equipo
+            "name": string,          // Nombre del equipo
+            "description": string,   // Descripcion
+            "formation_date": string(ISO-8601), // Fecha de formacion
+            "active": boolean,       // Si esta activo
+            "leader": string,        // Lider del equipo
+            "members": [             // Miembros del equipo
+                {
+                    "development_member_id": integer, // ID del miembro
+                    "name": string,          // Nombre del miembro
+                    "join_date": string(ISO-8601), // Fecha de incorporacion
+                    "end_date": string(ISO-8601),  // Fecha de salida (o null)
+                    "rol": string,           // Rol en el equipo
+                    "title": string          // Titulo o cargo
+                }
+                // ... mas miembros
+            ]
+        }
+        // ... mas equipos
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{POST Creacion}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{POST /api/projects - Crear nuevo proyecto}
+			\begin{lstlisting}[language=HTTP]
+POST /api/projects
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "name": string,                  // Requerido: Nombre del proyecto
+    "description": string,           // Requerido: Descripcion
+    "start_date": string(ISO-8601),  // Requerido: Fecha de inicio
+    "end_date": string(ISO-8601),    // Requerido: Fecha de finalizacion planificada
+    "budget": number,                // Requerido: Presupuesto asignado
+    "development_id": string,        // Requerido: ID de desarrollo (1, 2, 3)
+    "status": string(enum),          // Requerido: Estado inicial
+    "goals": [                       // Opcional: Objetivos iniciales
+        {
+            "title": string,         // Titulo del objetivo
+            "description": string,   // Descripcion del objetivo
+            "completion_date": string(ISO-8601), // Fecha de cumplimiento
+            "status": string(enum)   // Estado del objetivo
+        }
+    ],
+    "teams": [                       // Opcional: Equipos iniciales
+        {
+            "name": string,          // Nombre del equipo
+            "description": string,   // Descripcion
+            "formation_date": string(ISO-8601), // Fecha de formacion
+            "active": boolean,       // Si esta activo
+            "leader": string,        // Lider del equipo
+            "members": [             // Miembros del equipo
+                {
+                    "development_member_id": integer, // ID del miembro
+                    "join_date": string(ISO-8601), // Fecha de incorporacion
+                    "end_date": string(ISO-8601),  // Fecha de salida (o null)
+                    "rol": string,           // Rol en el equipo
+                    "title": string          // Titulo o cargo
+                }
+            ]
+        }
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID generado automaticamente
+    "name": string,                  // Nombre proporcionado
+    "status": string(enum),          // Estado inicial
+    "created_at": string(ISO-8601)   // Timestamp de creacion
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{PUT (Reemplazo completo)}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{PUT /api/projects/{id} - Actualizar proyecto completo}
+			\begin{lstlisting}[language=HTTP]
+PUT /api/projects/{id}
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "name": string,
+    "description": string,
+    "start_date": string(ISO-8601),
+    "end_date": string(ISO-8601),
+    "budget": number,
+    "development_id": string,
+    "status": string(enum),
+    "goals": [
+        {
+            "title": string,
+            "description": string,
+            "completion_date": string(ISO-8601),
+            "status": string(enum)
+        }
+    ],
+    "teams": [
+        {
+            "name": string,
+            "description": string,
+            "formation_date": string(ISO-8601),
+            "active": boolean,
+            "leader": string,
+            "members": [
+                {
+                    "development_member_id": integer,
+                    "join_date": string(ISO-8601),
+                    "end_date": string(ISO-8601),
+                    "rol": string,
+                    "title": string
+                }
+            ]
+        }
+    ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,                   // ID del proyecto actualizado
+    "name": string,                  // Nombre actualizado
+    "last_updated": string(ISO-8601) // Timestamp de actualizacion
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{PATCH (Actualizacion parcial)}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{PATCH /api/projects/{id} - Actualizar campos especificos}
+			\begin{lstlisting}[language=HTTP]
+PATCH /api/projects/{id}
+Content-Type: application/json-patch+json
+Authorization: Bearer <token>
+
+[
+    {
+      "op": string(enum),
+      "path": string,
+      "value": any
+    }
+    // Ejemplo: { "op": "replace", "path": "/status", "value": "COMPLETADO" }
+]
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+    "id": integer,       // ID del proyecto modificado
+    "changes": string[], // Lista de campos modificados
+    "version": integer   // Nueva version del documento
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{DELETE}
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{DELETE /api/projects/{id} - Eliminar proyecto}
+			\begin{lstlisting}[language=HTTP]
+DELETE /api/projects/{id}
+Authorization: Bearer <token>
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Respuesta}
+			\begin{lstlisting}[language=HTTP]
+HTTP/1.1 204 No Content
+// No se devuelve cuerpo de respuesta
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%   CURSOS %%%%%%%%%%%%%%%%%%%%
 
@@ -506,9 +1065,201 @@ Con base en los elementos anteriores, definimos los siguientes endpoints REST co
 
 \subsubsection{Equipos}
 
+\paragraph{GET Todos (Paginado)}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET Equipos (paginado)}
+			\begin{lstlisting}[language=HTTP]
+GET /api/teams?page=0&size=10&sort=formation_date,desc
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+  "content": [
+    {
+      "id": integer,              // ID unico del equipo
+      "name": string,             // Nombre del equipo
+      "description": string,      // Descripcion del equipo
+      "active": boolean,          // Si el equipo esta activo
+      "leader": string            // Nombre del lider
+    }
+    // ... mas elementos
+  ],
+  "pageable": {
+    "sort": object,
+    "pageSize": integer,
+    "pageNumber": integer
+  },
+  "totalElements": integer,
+  "totalPages": integer,
+  "first": boolean,
+  "last": boolean,
+  "size": integer
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{GET Individual}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET /api/teams/{id} - Obtener equipo especifico}
+			\begin{lstlisting}[language=HTTP]
+GET /api/teams/{id}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+  "id": integer,             // ID unico del equipo
+  "name": string,            // Nombre del equipo
+  "description": string,     // Descripcion
+  "active": boolean,         // Si esta activo
+  "leader": string,          // Nombre del lider
+  "members": [
+    {
+      "name": string,        // Nombre del miembro
+      "rol": string,         // Rol asignado
+      "title": string        // Titulo o cargo
+    }
+    // ... mas miembros
+  ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{POST Creacion}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{POST /api/teams - Crear nuevo equipo}
+			\begin{lstlisting}[language=HTTP]
+POST /api/teams
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "project_id": integer,        // Requerido: ID del proyecto al que pertenece
+  "name": string,               // Requerido: Nombre del equipo
+  "description": string,        // Requerido: Descripcion
+  "formation_date": string(ISO-8601), // Requerido: Fecha de formacion
+  "active": boolean,            // Requerido: Estado de actividad
+  "leader": string,             // Requerido: Nombre del lider
+  "members": [
+    {
+      "development_member_id": integer, // Requerido
+      "join_date": string(ISO-8601),    // Requerido
+      "end_date": string(ISO-8601),     // Opcional
+      "rol": string,                    // Requerido
+      "title": string                   // Requerido
+    }
+    // ... mas miembros
+  ]
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+  "id": integer,               // ID generado automaticamente
+  "name": string,              // Nombre del equipo creado
+  "created_at": string(ISO-8601) // Timestamp de creacion
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+
+
+
+
+\paragraph{PATCH (Actualizacion parcial)}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{PATCH /api/teams/{id} - Actualizar campos especificos}
+			\begin{lstlisting}[language=HTTP]
+PATCH /api/teams/{id}
+Content-Type: application/json-patch+json
+Authorization: Bearer <token>
+
+[
+  {
+    "op": string(enum), 
+    "path": string, 
+    "value": any 
+  }
+  // Ejemplo: { "op": "replace", "path": "/name", "value": "Equipo Actualizado" }
+]
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+  "id": integer,         // ID del equipo modificado
+  "changes": string[],   // Lista de campos modificados
+  "version": integer     // Nueva version del documento
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{DELETE}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{DELETE /api/teams/{id} - Eliminar equipo}
+			\begin{lstlisting}[language=HTTP]
+DELETE /api/teams/{id}
+Authorization: Bearer <token>
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Respuesta}
+			\begin{lstlisting}[language=HTTP]
+HTTP/1.1 204 No Content
+// No se devuelve cuerpo de respuesta
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%   NOTICIAS %%%%%%%%%%%%%%%%%%%%
 \subsubsection{Noticias}
-
 \paragraph{GET Todos (Paginado)}
 
 \begin{center}
@@ -530,7 +1281,7 @@ GET /api/news?page=0&size=10&sort=publishDate,desc
         {
             "id": integer,                   // ID unico de la noticia
             "title": string,                 // Titulo de la noticia
-            "content": string(HTML),         // Contenido completo en HTML
+			"description":string,			 // Breve descripcin que se muestra 
             "publishDate": string(ISO-8601), // Fecha de publicacion
             "author": string,                // Nombre del autor
             "imageUrl": string(URL),         // Ruta a la imagen destacada
@@ -559,7 +1310,7 @@ GET /api/news?page=0&size=10&sort=publishDate,desc
 
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{GET /api/news/{id} - Obtener noticia específica}
+		\begin{codebox}{GET /api/news/{id} - Obtener noticia especifica}
 			\begin{lstlisting}[language=HTTP]
 GET /api/news/{id}
 \end{lstlisting}
@@ -574,7 +1325,8 @@ GET /api/news/{id}
 {
     "id": integer,                   // ID unico de la noticia
     "title": string,                 // Titulo de la noticia
-    "content": string(HTML),         // Contenido completo en HTML
+	"description":string  			 // Breve descripcion
+    "content": string(HTML o .md),   // Contenido completo en HTML o .md
     "publishDate": string(ISO-8601), // Fecha de publicacion
     "author": string,                // Nombre del autor
     "imageUrl": string(URL),         // Ruta a la imagen destacada
@@ -585,7 +1337,7 @@ GET /api/news/{id}
 	\end{minipage}
 \end{center}
 
-\paragraph{POST Creación}
+\paragraph{POST Creacion}
 \begin{center}
 	\begin{minipage}{\textwidth}
 		\begin{codebox}{POST /api/news - Crear nueva noticia}
@@ -595,10 +1347,11 @@ Content-Type: application/json
 Authorization: Bearer <token>
 
 {
-    "title": string,       // Requerido: Titulo de la noticia
-    "content": string(URL:.MD) // Requerido: Ruta para contenido posiblemente HTML o .MD , en su defecto el contenido en un string
-    "tags": string[]  //  Array de etiquetas 
-    "imageURL": String(URL) // Ruta a la Imagen
+    "title": string,           // Requerido: Titulo de la noticia
+	"description":string  	   // Requerido: Descripcion de la noticia
+    "content": string(URL:.md) // Requerido: Ruta o contenido en HTML o .md
+    "tags": string[],          // Array de etiquetas 
+    "imageURL": string(URL)    // Ruta a la imagen
 }
 \end{lstlisting}
 		\end{codebox}
@@ -630,10 +1383,10 @@ Content-Type: application/json
 Authorization: Bearer <token>
 
 {
-    "title": string,        // Requerido: Nuevo titulo
-    "content": string(HTML) // Requerido: Nuevo contenido
-    "imageURL": string(URL) // Ruta de la nueva imagen
-    // Todos los campos son requeridos en PUT , 
+    "title": string,          // Requerido: Nuevo titulo
+    "content": string(HTML),  // Requerido: Nuevo contenido (HTML o .md)
+    "imageURL": string(URL)   // Ruta de la nueva imagen
+    // Todos los campos son requeridos en PUT, 
     // se pueden dejar en blanco si no se quiere actualizar ese apartado
 }
 \end{lstlisting}
@@ -655,21 +1408,21 @@ Authorization: Bearer <token>
 	\end{minipage}
 \end{center}
 
-\paragraph{PATCH (Actualización parcial)}
+\paragraph{PATCH (Actualizacion parcial)}
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{PATCH /api/news/{id} - Actualizar campos específicos}
+		\begin{codebox}{PATCH /api/news/{id} - Actualizar campos especificos}
 			\begin{lstlisting}[language=HTTP]
 PATCH /api/news/{id}
 Content-Type: application/json-patch+json
 Authorization: Bearer <token>
 
 [
-    { "op": string(enum), 
+    { 
+      "op": string(enum), 
       "path": string, 
       "value": any 
-    }, // Operacion JSON Patch
-
+    }
     // Operaciones permitidas: "replace", "add", "remove"
     // Ejemplo: { "op": "replace", "path": "/title", "value": "Nuevo titulo" }
 ]
@@ -683,7 +1436,7 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,     // ID de la noticia modificada
+    "id": integer,       // ID de la noticia modificada
     "changes": string[], // Lista de campos modificados
     "version": integer   // Nueva version del documento
 }
@@ -718,14 +1471,13 @@ HTTP/1.1 204 No Content
 
 %%%%%%%%%%%%% ALIADOS Y FUNDACIONES %%%%%%%%%%%%%%%%%%%
 \subsubsection{Aliados y Fundaciones}
-
 \paragraph{GET Todos (Paginado)}
 
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{GET Aliados (paginado)}
+		\begin{codebox}{GET Fundaciones (paginado)}
 			\begin{lstlisting}[language=HTTP]
-GET /api/allies?page=0&size=10&type=FOUNDATION
+GET /api/foundations?page=0&size=10&sort=name,asc
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
@@ -736,28 +1488,25 @@ GET /api/allies?page=0&size=10&type=FOUNDATION
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "content": [
-        {
-            "id": integer,                   // ID unico del aliado
-            "name": string,                  // Nombre de la organizacion
-            "type": string(enum),            // Tipo: FOUNDATION, COMPANY, NGO, etc.
-            "description": string,           // Descripcion corta
-            "logoUrl": string(URL),          // Ruta al logo
-            "website": string(URL),          // Sitio web
-            "partnerSince": string(ISO-8601) // Fecha de inicio de alianza
-        }
-        // ... mas elementos
-    ],
-    "pageable": {
-        "sort": object,       // Informacion de ordenamiento
-        "pageSize": integer,  // Tamanio de pagina solicitado
-        "pageNumber": integer // Numero de pagina actual
-        // ... mas metadatos de paginacion
-    },
-    "totalElements": integer, // Total de resultados
-    "totalPages": integer,    // Total de paginas disponibles
-    "first": boolean,         // Si es la primera pagina
-    "last": boolean           // Si es la ultima pagina
+  "content": [
+    {
+      "id": integer,        // ID unico de la fundacion
+      "name": string,       // Nombre
+      "description": string,// Descripcion breve
+      "logo_url": string(URL) // Logo de la fundacion
+    }
+    // ... mas elementos
+  ],
+  "pageable": {
+    "sort": object,
+    "pageSize": integer,
+    "pageNumber": integer
+  },
+  "totalElements": integer,
+  "totalPages": integer,
+  "first": boolean,
+  "last": boolean,
+  "size": integer
 }
 \end{lstlisting}
 		\end{codebox}
@@ -768,9 +1517,9 @@ GET /api/allies?page=0&size=10&type=FOUNDATION
 
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{GET /api/allies/{id} - Obtener aliado específico}
+		\begin{codebox}{GET /api/foundations/{id} - Obtener fundacion especifica}
 			\begin{lstlisting}[language=HTTP]
-GET /api/allies/{id}
+GET /api/foundations/{id}
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
@@ -781,58 +1530,67 @@ GET /api/allies/{id}
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID unico del aliado
-    "name": string,                  // Nombre de la organizacion
-    "type": string(enum),            // Tipo: FOUNDATION, COMPANY, NGO, etc.
-    "description": string,           // Descripcion corta
-    "logoUrl": string(URL),          // Ruta al logo
-    "website": string(URL),          // Sitio web
-    "partnerSince": string(ISO-8601), // Fecha de inicio de alianza
-    "contactInfo": {                 // Informacion de contacto
-        "email": string(email),      
-        "phone": string              
-    },
-    "projects": [                    // Proyectos asociados
-        {
-            "id": integer,
-            "name": string,
-            "status": string(enum)   // ACTIVE, COMPLETED, PLANNED
-        }
-    ],
-    "socialMedia": {                 // Redes sociales
-        "facebook": string(URL),
-        "twitter": string(URL),
-        "linkedin": string(URL)
-    }
+  "id": integer,          // ID unico
+  "name": string,         // Nombre
+  "description": string,  // Descripcion
+  "logo_url": string(URL) // Logo
 }
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
 \end{center}
 
-\paragraph{POST Creación}
+\paragraph{GET Dashboard (detallado)}
+
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{POST /api/allies - Crear nuevo aliado}
+		\begin{codebox}{GET /api/foundations/{id}/dashboard - Informacion extendida}
 			\begin{lstlisting}[language=HTTP]
-POST /api/allies
+GET /api/foundations/{id}/dashboard
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+{
+  "id": integer,
+  "name": string,
+  "description": string,
+  "logo_url": string(URL),
+  "phone": string,
+  "address": string,
+  "location": string,
+  "website": string,
+  "quantity_proyects":integer, // aqui podriamos hacer algun apartado visual bonito
+  // Puede agregarse un apartado adicional para redes sociales
+}
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\paragraph{POST Creacion}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{POST /api/foundations - Crear fundacion}
+			\begin{lstlisting}[language=HTTP]
+POST /api/foundations
 Content-Type: application/json
 Authorization: Bearer <token>
 
 {
-    "name": string,                  // Requerido: Nombre de la organizacion
-    "type": string(enum),            // Requerido: FOUNDATION, COMPANY, NGO, etc.
-    "description": string,           // Requerido: Descripcion
-    "website": string(URL),          // Opcional: Sitio web
-    "contactInfo": {                 // Opcional: Informacion de contacto
-        "email": string(email),
-        "phone": string
-    },
-    "socialMedia": {                 // Opcional: Redes sociales
-        "facebook": string(URL),
-        "twitter": string(URL),
-        "linkedin": string(URL)
-    }
+  "name": string,         // Requerido
+  "description": string,  // Requerido
+  "logo_url": string(URL),// Requerido
+  "phone": string,        // Opcional
+  "address": string,      // Opcional
+  "location": string,     // Opcional
+  "website": string       // Opcional
 }
 \end{lstlisting}
 		\end{codebox}
@@ -844,74 +1602,32 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID generado automaticamente
-    "name": string,                  // Nombre proporcionado
-    "type": string(enum),            // Tipo proporcionado
-    "createdAt": string(ISO-8601),   // Timestamp de creacion
-    "status": string(enum)           // Estado inicial: PENDING_REVIEW
+  "id": integer,        // ID generado
+  "name": string,       // Nombre
+  "created_at": string(ISO-8601) // Timestamp
 }
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
 \end{center}
 
-\paragraph{PUT (Reemplazo completo)}
+\paragraph{PATCH (Actualizacion parcial)}
+
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{PUT /api/allies/{id} - Actualizar aliado completo}
+		\begin{codebox}{PATCH /api/foundations/{id} - Actualizar campos especificos}
 			\begin{lstlisting}[language=HTTP]
-PUT /api/allies/{id}
-Content-Type: application/json
-Authorization: Bearer <token>
-
-{
-    "name": string,                  // Requerido: Nombre de la organizacion
-    "type": string(enum),            // Requerido: FOUNDATION, COMPANY, NGO, etc.
-    "description": string,           // Requerido: Descripcion
-    "website": string(URL),          // Opcional: Sitio web
-    "contactInfo": {                 // Opcional: Informacion de contacto
-        "email": string(email),
-        "phone": string
-    },
-    "socialMedia": {                 // Opcional: Redes sociales
-        "facebook": string(URL),
-        "twitter": string(URL),
-        "linkedin": string(URL)
-    }
-}
-\end{lstlisting}
-		\end{codebox}
-	\end{minipage}
-\end{center}
-
-\begin{center}
-	\begin{minipage}{\textwidth}
-		\begin{codebox}{Estructura de respuesta}
-			\begin{lstlisting}[language=json]
-{
-    "id": integer,                   // ID del aliado actualizado
-    "name": string,                  // Nombre actualizado
-    "lastUpdated": string(ISO-8601), // Timestamp de actualizacion
-    "status": string(enum)           // Estado: ACTIVE, PENDING_REVIEW, etc.
-}
-\end{lstlisting}
-		\end{codebox}
-	\end{minipage}
-\end{center}
-
-\paragraph{PATCH (Actualización parcial)}
-\begin{center}
-	\begin{minipage}{\textwidth}
-		\begin{codebox}{PATCH /api/allies/{id} - Actualizar campos específicos}
-			\begin{lstlisting}[language=HTTP]
-PATCH /api/allies/{id}
+PATCH /api/foundations/{id}
 Content-Type: application/json-patch+json
 Authorization: Bearer <token>
 
 [
-    { "op": string(enum), "path": string, "value": any }, // Operacion JSON Patch
-    // Operaciones permitidas: "replace", "add", "remove"
-    // Ejemplo: { "op": "replace", "path": "/description", "value": "Nueva descripcion" }
+  {
+    "op": string(enum),
+    "path": string,
+    "value": any
+  }
+  // Ejemplo: { "op": "replace", "path": "/phone", "value": "+51 999999999" }
 ]
 \end{lstlisting}
 		\end{codebox}
@@ -923,10 +1639,9 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,        // ID del aliado modificado
-    "changes": string[],  // Lista de campos modificados
-    "version": integer,   // Nueva version del documento
-    "modifiedAt": string(ISO-8601) // Timestamp de modificacion
+  "id": integer,       // ID de la fundacion modificada
+  "changes": string[], // Lista de campos modificados
+  "version": integer   // Nueva version del documento
 }
 \end{lstlisting}
 		\end{codebox}
@@ -934,11 +1649,12 @@ Authorization: Bearer <token>
 \end{center}
 
 \paragraph{DELETE}
+
 \begin{center}
 	\begin{minipage}{\textwidth}
-		\begin{codebox}{DELETE /api/allies/{id} - Eliminar aliado}
+		\begin{codebox}{DELETE /api/foundations/{id} - Eliminar fundacion}
 			\begin{lstlisting}[language=HTTP]
-DELETE /api/allies/{id}
+DELETE /api/foundations/{id}
 Authorization: Bearer <token>
 \end{lstlisting}
 		\end{codebox}
@@ -955,4 +1671,49 @@ HTTP/1.1 204 No Content
 		\end{codebox}
 	\end{minipage}
 \end{center}
+
+\paragraph{GET Proyectos por fundacion}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{GET /api/foundations/projects - Obtener proyectos por fundacion}
+			\begin{lstlisting}[language=HTTP]
+GET /api/foundations/projects
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
+\begin{center}
+	\begin{minipage}{\textwidth}
+		\begin{codebox}{Estructura de respuesta}
+			\begin{lstlisting}[language=json]
+[
+  {
+    "foundation": string,     // Nombre de la fundacion
+    "projects": [
+      {
+        "name": string,              // Nombre del proyecto
+        "description": string,       // Descripcion
+        "created_at": string(ISO-8601),
+        "start_date": string(ISO-8601),
+        "end_date": string(ISO-8601),
+        "status": string(enum),     // Ej: ACTIVA
+        "budget": number,           // Presupuesto
+        "leader": string,           // Nombre del lider
+        "members": [
+          {
+            "name": string,         // Nombre del miembro
+            "title": string         // Cargo
+          }
+        ]
+      }
+    ]
+  }
+]
+\end{lstlisting}
+		\end{codebox}
+	\end{minipage}
+\end{center}
+
 \end{document}

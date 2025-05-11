@@ -282,47 +282,45 @@ Se desarrollará una plataforma integral para la gestión y difusión de informa
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{src/SID_microservices.pdf}
-	\caption{Diagrama de microservicios del proyecto}
+	\caption{Diagrama de modulos del proyecto}
 \end{figure}
 
-\section{Modulos propuestos}
+% \subsection{Servicio de Autenticación y Usuarios}
+% \begin{itemize}
+% 	\item Gestión completa del ciclo de vida de usuarios
+% 	\item Autenticación y autorización
+% 	\item Gestión de tokens y sesiones
+% \end{itemize}
 
-\subsection{Servicio de Autenticación y Usuarios}
-\begin{itemize}
-	\item Gestión completa del ciclo de vida de usuarios
-	\item Autenticación y autorización
-	\item Gestión de tokens y sesiones
-\end{itemize}
+% \subsection{Servicio del portal web y dashboard}
+% \begin{itemize}
+% 	\item Visualización de desarrollos (Web, Robótica, etc.)
+% 	\item Visualización de comités (Financiero, Social, etc.)
+% 	\item Visualización de noticias y actualizaciones
+% 	\item Visualización de información sobre fundaciones y trabajos realizados
+% 	\item Visualización de integrantes y Formulario
 
-\subsection{Servicio de Estructura Organizacional}
-\begin{itemize}
-	\item Visualización de desarrollos (Web, Robótica, etc.)
-	\item Visualización de comités (Financiero, Social, etc.)
-	\item Visualización de noticias y actualizaciones
-	\item Visualización de información sobre fundaciones y trabajos realizados
-	\item Visualización de integrantes y Formulario
+% 	\item Administración y gestión de desarrollos (Web, Robótica, etc.)
+% 	\item Administración y gestión de comités (Financiero, Social, etc.)
+% 	\item Administración y gestión de noticias y actualizaciones
+% 	\item Administración y gestión de información sobre fundaciones y trabajos realizados
+% 	\item Administración y gestión de integrantes
+% 	\item Administracion de integrantes mediante Formulario.
+% \end{itemize}
 
-	\item Administración y gestión de desarrollos (Web, Robótica, etc.)
-	\item Administración y gestión de comités (Financiero, Social, etc.)
-	\item Administración y gestión de noticias y actualizaciones
-	\item Administración y gestión de información sobre fundaciones y trabajos realizados
-	\item Administración y gestión de integrantes
-	\item Administracion de integrantes mediante Formulario.
-\end{itemize}
+% \subsection{Servicio de gestión de cursos}
+% \begin{itemize}
+% 	\item Catálogo e inscripción a cursos
+% 	\item Gestión de profesores y alumnos
+% 	\item Seguimiento y evaluación
+% \end{itemize}
 
-\subsection{Servicio de Gestión Académica}
-\begin{itemize}
-	\item Catálogo e inscripción a cursos
-	\item Gestión de profesores y alumnos
-	\item Seguimiento y evaluación
-\end{itemize}
-
-\subsection{Servicio QtAcademy (futuro)}
-\begin{itemize}
-	\item Gestión de contenidos educativos cortos
-	\item Sistema de aprobación y curación
-	\item Análisis de métricas de consumo
-\end{itemize}
+% \subsection{Servicio SIDAcademy (futuro)}
+% \begin{itemize}
+% 	\item Gestión de contenidos educativos cortos
+% 	\item Sistema de aprobación y curación
+% 	\item Análisis de métricas de consumo
+% \end{itemize}
 
 
 \begin{table}[H]
@@ -402,10 +400,7 @@ La base de datos generada es:
 	\caption{Diagrama de base de datos relacional}
 \end{figure}
 
-\section{Arquitectura de modulos y microservicios: }
-Vamos a abordar todo el tema de los m{\'o}dulos y microservicios ademas de su arquitectura paso por paso.
-El único microservicio actual es AuthService, luego estan los m{\'o}dulos monoliticos como el \textbf{Portal Content Service}
-\section{Portal Content Service}
+\section{Arquitectura Portal Content Service}
 Este servicio de portal de contenido que se generará es la dicha ``Página del SID'', desde el lado del backend tenemos que suplir información relevante,
 esta información está dividida en:
 \begin{itemize}
@@ -423,7 +418,7 @@ El sistema está diseñado para mantener el desacoplamiento de funciones para ga
 escalabilidad
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\textwidth]{src/SID_PortalWEB_D1.pdf}
+	\includegraphics[width=0.4\textwidth]{src/SID_PortalWEB_D1.pdf}
 	\caption{Diagrama de la arquitectura por capas}
 \end{figure}
 

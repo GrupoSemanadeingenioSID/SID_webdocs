@@ -13,8 +13,8 @@
 \usepackage{enumitem} % <-- Para mejor control de listas
 \usepackage{inconsolata} % Fuente moderna monoespaciada
 \usepackage{fontawesome5} % Para iconos
-\usepackage{calc}
 \usepackage{hyperref}
+\usepackage{bookmark} % Handle rerunfilecheck warning
 %%% Tabla: 
 \usepackage{makecell}       % Para formatear mejor las celdas
 \usepackage{multirow}       % Para celdas de múltiples filas
@@ -630,10 +630,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID generado automaticamente
-    "title": string,                 // Titulo proporcionado
-    "status": string(enum),          // Estado inicial
-    "created_at": string(ISO-8601)   // Timestamp de creacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -684,9 +682,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID de la actividad actualizada
-    "title": string,                 // Titulo actualizado
-    "last_updated": string(ISO-8601) // Timestamp de actualizacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -721,9 +718,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,       // ID de la actividad modificada
-    "changes": string[], // Lista de campos modificados
-    "version": integer   // Nueva version del documento
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -919,10 +915,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID generado automaticamente
-    "name": string,                  // Nombre proporcionado
-    "status": string(enum),          // Estado inicial
-    "created_at": string(ISO-8601)   // Timestamp de creacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -983,9 +977,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID del proyecto actualizado
-    "name": string,                  // Nombre actualizado
-    "last_updated": string(ISO-8601) // Timestamp de actualizacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -1019,9 +1012,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,       // ID del proyecto modificado
-    "changes": string[], // Lista de campos modificados
-    "version": integer   // Nueva version del documento
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -1177,16 +1169,60 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-  "id": integer,               // ID generado automaticamente
-  "name": string,              // Nombre del equipo creado
-  "created_at": string(ISO-8601) // Timestamp de creacion
+  "code": integer,               // Codigo de respuesta
+  "message": string,            // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
 \end{center}
 
+\paragraph{PUT (Reemplazo completo)}
+\begin{center}
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{PUT /api/teams/{id} - Actualizar equipo completo}
+            \begin{lstlisting}[language=HTTP]
+PUT /api/teams/{id}
+Content-Type: application/json
+Authorization: Bearer <token>
 
+{
+    "project_id": integer,        // Requerido: ID del proyecto al que pertenece
+    "name": string,               // Requerido: Nombre del equipo
+    "description": string,        // Requerido: Descripcion
+    "formation_date": string(ISO-8601), // Requerido: Fecha de formacion
+    "active": boolean,            // Requerido: Estado de actividad
+    "leader": string,             // Requerido: Nombre del lider
+    "members": [                  // Requerido: Lista completa de miembros
+        {
+            "development_member_id": integer, // ID del miembro
+            "join_date": string(ISO-8601),    // Fecha de incorporacion
+            "end_date": string(ISO-8601),     // Fecha de salida (o null)
+            "rol": string,                    // Rol en el equipo
+            "title": string                   // Titulo o cargo
+        }
+        // ... todos los miembros
+    ]
+    // Todos los campos son requeridos en PUT,
+    // se deben incluir todos los datos actualizados
+}
+\end{lstlisting}
+        \end{codebox}
+    \end{minipage}
+\end{center}
+
+\begin{center}
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{Estructura de respuesta}
+            \begin{lstlisting}[language=json]
+{
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
+}
+\end{lstlisting}
+        \end{codebox}
+    \end{minipage}
+\end{center}
 
 
 
@@ -1218,9 +1254,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-  "id": integer,         // ID del equipo modificado
-  "changes": string[],   // Lista de campos modificados
-  "version": integer     // Nueva version del documento
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -1358,10 +1393,8 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID generado automaticamente
-    "title": string,                 // Titulo proporcionado
-    "status": string(enum),          // Estado inicial: DRAFT
-    "createdAt": string(ISO-8601)    // Timestamp de creacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
@@ -1390,19 +1423,17 @@ Authorization: Bearer <token>
 \end{center}
 
 \begin{center}
-	\begin{minipage}{\textwidth}
-		\begin{codebox}{Estructura de respuesta}
-			\begin{lstlisting}[language=json]
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{Estructura de respuesta}
+            \begin{lstlisting}[language=json]
 {
-    "id": integer,                   // ID de la noticia actualizada
-    "title": string,                 // Titulo actualizado
-    "lastUpdated": string(ISO-8601)  // Timestamp de actualizacion
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
-		\end{codebox}
-	\end{minipage}
+        \end{codebox}
+    \end{minipage}
 \end{center}
-
 \paragraph{PATCH (Actualizacion parcial)}
 \begin{center}
 	\begin{minipage}{\textwidth}
@@ -1427,17 +1458,16 @@ Authorization: Bearer <token>
 \end{center}
 
 \begin{center}
-	\begin{minipage}{\textwidth}
-		\begin{codebox}{Estructura de respuesta}
-			\begin{lstlisting}[language=json]
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{Estructura de respuesta}
+            \begin{lstlisting}[language=json]
 {
-    "id": integer,       // ID de la noticia modificada
-    "changes": string[], // Lista de campos modificados
-    "version": integer   // Nueva version del documento
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
-		\end{codebox}
-	\end{minipage}
+        \end{codebox}
+    \end{minipage}
 \end{center}
 
 \paragraph{DELETE}
@@ -1597,13 +1627,49 @@ Authorization: Bearer <token>
 		\begin{codebox}{Estructura de respuesta}
 			\begin{lstlisting}[language=json]
 {
-  "id": integer,        // ID generado
-  "name": string,       // Nombre
-  "created_at": string(ISO-8601) // Timestamp
+  "code": integer,    // Codigo de respuesta
+  "message": string   // Mensaje de exito
 }
 \end{lstlisting}
 		\end{codebox}
 	\end{minipage}
+\end{center}
+\paragraph{PUT (Reemplazo completo)}
+\begin{center}
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{PUT /api/foundations/{id} - Actualizar fundacion completa}
+            \begin{lstlisting}[language=HTTP]
+PUT /api/foundations/{id}
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+    "name": string,         // Requerido: Nombre
+    "description": string,  // Requerido: Descripcion
+    "logo_url": string(URL),// Requerido: Logo
+    "phone": string,        // Requerido: Telefono
+    "address": string,      // Requerido: Direccion
+    "location": string,     // Requerido: Ubicacion
+    "website": string       // Requerido: Sitio web
+    // Todos los campos son requeridos en PUT, 
+    // se pueden dejar en blanco si no se quiere actualizar ese apartado
+}
+\end{lstlisting}
+        \end{codebox}
+    \end{minipage}
+\end{center}
+
+\begin{center}
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{Estructura de respuesta}
+            \begin{lstlisting}[language=json]
+{
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
+}
+\end{lstlisting}
+        \end{codebox}
+    \end{minipage}
 \end{center}
 
 \paragraph{PATCH (Actualizacion parcial)}
@@ -1630,17 +1696,16 @@ Authorization: Bearer <token>
 \end{center}
 
 \begin{center}
-	\begin{minipage}{\textwidth}
-		\begin{codebox}{Estructura de respuesta}
-			\begin{lstlisting}[language=json]
+    \begin{minipage}{\textwidth}
+        \begin{codebox}{Estructura de respuesta}
+            \begin{lstlisting}[language=json]
 {
-  "id": integer,       // ID de la fundacion modificada
-  "changes": string[], // Lista de campos modificados
-  "version": integer   // Nueva version del documento
+    "code": integer,    // Codigo de respuesta
+    "message": string   // Mensaje de exito
 }
 \end{lstlisting}
-		\end{codebox}
-	\end{minipage}
+        \end{codebox}
+    \end{minipage}
 \end{center}
 
 \paragraph{DELETE}

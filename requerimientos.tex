@@ -847,8 +847,9 @@ GET /api/projects/{id}
                     "name": string,          // Nombre del miembro
                     "join_date": string(ISO-8601), // Fecha de incorporacion
                     "end_date": string(ISO-8601),  // Fecha de salida (o null)
-                    "rol": string,           // Rol en el equipo
-                    "title": string          // Titulo o cargo
+                    "rol_id": integer,           // Rol en el equipo, necesitamos el id | 
+                    // Es decir que antes se tiene que crear los roles
+                    "title_id": integer          // Id del titulo o del cargo. 
                 }
                 // ... mas miembros
             ]
